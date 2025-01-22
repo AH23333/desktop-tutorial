@@ -3,11 +3,12 @@
 
 #define MAX INT_MAX - 1
 
-//ÍØÆËÅÅĞòÓÅ»¯
+//æ‹“æ‰‘æ’åºä¼˜åŒ–
+//optimization of topology sort
 
-//Ô­Àí
-/*ÓĞÏòÍ¼
-	  ¡ú	A  B  C  D  E  F
+//åŸç† theory
+/*æœ‰å‘å›¾ digraph
+	  â†’	A  B  C  D  E  F
 	A	0, 1, 1, 1, 0, 0,
 	B	0, 0, 0, 0, 0, 0,
 	C	0, 1, 0, 0, 1, 0,
@@ -15,13 +16,17 @@
 	E	0, 0, 0, 0, 0, 0,
 	F	0, 0, 0, 1, 1, 0
 	*/
-//¹æ¶¨ÁÚ½Ó¾ØÕóµÄĞĞ±íÊ¾¶¥µãµÄ³ö¶È£¬ÁĞ±íÊ¾¶¥µãµÄÈë¶È
-//Ã¿´ÎÕÒ³öÈë¶ÈÎª0µÄ¶¥µã£¬É¾³ı¸Ã¶¥µã£¬¸üĞÂÁÚ½Ó¾ØÕó£¬Ö±µ½ËùÓĞ¶¥µã¶¼±»É¾³ı
-//Èç¹û×îºó»¹ÓĞ¶¥µãÃ»ÓĞ±»É¾³ı£¬ËµÃ÷ÓĞ»·
+//è§„å®šé‚»æ¥çŸ©é˜µçš„è¡Œè¡¨ç¤ºé¡¶ç‚¹çš„å‡ºåº¦ï¼Œåˆ—è¡¨ç¤ºé¡¶ç‚¹çš„å…¥åº¦
+//We specify that the rows of the adjacency matrix represent the outgoing degree and the columms represent the incoming degree of vertices
+//æ¯æ¬¡æ‰¾å‡ºå…¥åº¦ä¸º0çš„é¡¶ç‚¹ï¼Œåˆ é™¤è¯¥é¡¶ç‚¹ï¼Œæ›´æ–°é‚»æ¥çŸ©é˜µï¼Œç›´åˆ°æ‰€æœ‰é¡¶ç‚¹éƒ½è¢«åˆ é™¤
+//Each time we find a vertex with zero variance, and delete that vertex and update the adjacency matrix until all vertices are removed
+//å¦‚æœæœ€åè¿˜æœ‰é¡¶ç‚¹æ²¡æœ‰è¢«åˆ é™¤ï¼Œè¯´æ˜æœ‰ç¯
+//If there are still vertices left undeleted at the end there is a ring
 
-//É¸µÚÒ»´ÎÎªf
-/*ÓĞÏòÍ¼
-	  ¡ú	A  B  C  D  E  F
+//ç­›ç¬¬ä¸€æ¬¡ä¸ºf
+//Filter out the first time is F
+/*æœ‰å‘å›¾ digraph
+	  â†’	A  B  C  D  E  F
 	A	0, 1, 1, 1, 0,  ,
 	B	0, 0, 0, 0, 0,  ,
 	C	0, 1, 0, 0, 1,  ,
@@ -30,9 +35,10 @@
 	F	 ,  ,  ,  ,  ,  ,
 	*/
 
-//É¸µÚ¶ş´ÎÎªa
-/*ÓĞÏòÍ¼
-	  ¡ú	A  B  C  D  E  F
+//ç­›ç¬¬äºŒæ¬¡ä¸ºa
+// The second time is an a
+/*æœ‰å‘å›¾ digraph
+	  â†’	A  B  C  D  E  F
 	A	 ,  ,  ,  ,  ,  ,
 	B	 , 0, 0, 0, 0,  ,
 	C	 , 1, 0, 0, 1,  ,
@@ -41,9 +47,10 @@
 	F	 ,  ,  ,  ,  ,  ,
 	*/
 
-//É¸µÚÈı´ÎÎªd
-/*ÓĞÏòÍ¼
-	  ¡ú	A  B  C  D  E  F
+//ç­›ç¬¬ä¸‰æ¬¡ä¸ºd
+//d
+/*æœ‰å‘å›¾ digraph
+	  â†’	A  B  C  D  E  F
 	A	 ,  ,  ,  ,  ,  ,
 	B	 , 0, 0,  , 0,  ,
 	C	 , 1, 0,  , 1,  ,
@@ -52,9 +59,10 @@
 	F	 ,  ,  ,  ,  ,  ,
 	*/
 
-//É¸µÚËÄ´ÎÎªc
-/*ÓĞÏòÍ¼
-	  ¡ú	A  B  C  D  E  F
+//ç­›ç¬¬å››æ¬¡ä¸ºc
+//c
+/*æœ‰å‘å›¾ digraph
+	  â†’	A  B  C  D  E  F
 	A	 ,  ,  ,  ,  ,  ,
 	B	 , 0,  ,  , 0,  ,
 	C	 ,  ,  ,  ,  ,  ,
@@ -63,9 +71,10 @@
 	F	 ,  ,  ,  ,  ,  ,
 	*/
 
-//É¸µÚÎå´ÎÎªe
-/*ÓĞÏòÍ¼
-	  ¡ú	A  B  C  D  E  F
+//ç­›ç¬¬äº”æ¬¡ä¸ºe
+//e
+/*æœ‰å‘å›¾ digraph
+	  â†’	A  B  C  D  E  F
 	A	 ,  ,  ,  ,  ,  ,
 	B	 , 0,  ,  ,  ,  ,
 	C	 ,  ,  ,  ,  ,  ,
@@ -74,9 +83,10 @@
 	F	 ,  ,  ,  ,  ,  ,
 	*/
 
-//É¸µÚÁù´ÎÎªb
-/*ÓĞÏòÍ¼
-	  ¡ú	A  B  C  D  E  F
+//ç­›ç¬¬å…­æ¬¡ä¸ºb
+//b
+/*æœ‰å‘å›¾ digraph
+	  â†’	A  B  C  D  E  F
 	A	 ,  ,  ,  ,  ,  ,
 	B	 ,  ,  ,  ,  ,  ,
 	C	 ,  ,  ,  ,  ,  ,
@@ -85,13 +95,16 @@
 	F	 ,  ,  ,  ,  ,  ,
 	*/
 
-//È»ºóÃ»ÓĞÊ£ÏÂµÄÊı£¬ËµÃ÷Ã»ÓĞ»·
+//ç„¶åæ²¡æœ‰å‰©ä¸‹çš„æ•°ï¼Œè¯´æ˜æ²¡æœ‰ç¯
+// And then there is not number leftï¼Œwhich means there is not ring
 
-//µ«ÔÚCÀï²»ºÃ¶Ô¾ØÕó½øĞĞ²Ù×÷£¬ËùÒÔ¿ÉÒÔÏÈ°Ñ¾ØÕóÀïËùÓĞÊı¼ÓÒ»£¬È»ºóÔÙ½øĞĞ²Ù×÷
+//ä½†åœ¨Cè¯­è¨€ä¸­ä¸å¥½ç›´æ¥å¯¹çŸ©é˜µè¿›è¡ŒåŠ¨æ€æ“ä½œï¼Œæ‰€ä»¥å¯ä»¥å…ˆæŠŠçŸ©é˜µé‡Œæ‰€æœ‰æ•°åŠ ä¸€ï¼Œç„¶åå†è¿›è¡Œæ“ä½œ
+// Howeverï¼Œin Cï¼Œit is not good to directly perform dynamic operations on the matrix, so you can first add 1 to all the numbers in the matrix and then operate
 
-//ÏÈ°Ñ¾ØÕóÀïËùÓĞÊı¼ÓÒ»£¨ÓĞÒ»ËµÒ»¿´µÄÎÒÑÛ»¨£©
-/*ÓĞÏòÍ¼
-	  ¡ú	A  B  C  D  E  F
+//å…ˆæŠŠçŸ©é˜µé‡Œæ‰€æœ‰æ•°åŠ ä¸€ï¼ˆæœ‰ä¸€è¯´ä¸€çœ‹çš„æˆ‘çœ¼èŠ±ï¼‰
+//add 1 to all the numbers in the matrix(To be honest, this is making my eyes spin)
+/*æœ‰å‘å›¾ digraph
+	  â†’	A  B  C  D  E  F
 	A	1, 2, 2, 2, 1, 1,
 	B	1, 1, 1, 1, 1, 1,
 	C	1, 2, 1, 1, 2, 1,
@@ -100,11 +113,12 @@
 	F	1, 1, 1, 2, 2, 1,
 	*/
 
-//ºóÃæµÄ²Ù×÷ºÍÇ°ÃæÒ»Ñù£¬Ö»²»¹ı°ÑÉ¾³ı²Ù×÷»»³É¸³ÖµÎª0
+//åé¢çš„æ“ä½œå’Œå‰é¢ä¸€æ ·ï¼Œåªä¸è¿‡æŠŠåˆ é™¤æ“ä½œæ¢æˆèµ‹å€¼ä¸º0
+// The subsequent operations are the same as the previous ones, expect that the deletion operation is replace with assigning a value of 0
 
 typedef struct Graph {
-	char* vexs;//¶¥µã
-	int** arcs;//±ß
+	char* vexs;//é¡¶ç‚¹
+	int** arcs;//è¾¹
 	int vexNum;
 	int arcNum;
 } Graph;
@@ -120,8 +134,8 @@ int check_colume(Graph* graph, int index);
 int main(void)
 {
 	Graph* G = init_graph(6);
-	/*ÓĞÏòÍ¼
-	  ¡ú	A  B  C  D  E  F
+	/*æœ‰å‘å›¾
+	  â†’	A  B  C  D  E  F
 	A	0, 1, 1, 1, 0, 0,
 	B	0, 0, 0, 0, 0, 0,
 	C	0, 1, 0, 0, 1, 0,
@@ -130,7 +144,7 @@ int main(void)
 	F	0, 0, 0, 1, 1, 0
 	*/
 
-	//visitedÒ»Î¬Êı×é³õÊ¼»¯
+	//visitedä¸€ç»´æ•°ç»„åˆå§‹åŒ–
 	int* visited = (int*)malloc(sizeof(int) * G->vexNum);
 	if (!visited) {
 		puts("visited malloc failed\n");
@@ -141,7 +155,7 @@ int main(void)
 		visited[i] = 0;
 	}
 
-	//Í¼ÁÚ½Ó¾ØÕóĞÅÏ¢
+	//å›¾é‚»æ¥çŸ©é˜µä¿¡æ¯
 	int arcs[6][6] = {
 		1, 2, 2, 2, 1, 1,
 		1, 1, 1, 1, 1, 1,
@@ -159,9 +173,9 @@ int main(void)
 	return EXIT_SUCCESS;
 }
 
-// ÍØÆËÅÅĞò
+// æ‹“æ‰‘æ’åº
 void topological_sort(Graph* graph) {
-	int* visited = (int*)malloc(sizeof(int) * graph->vexNum);	// ÓÃÀ´±ê¼ÇÊÇ·ñÒÑ´¦Àí
+	int* visited = (int*)malloc(sizeof(int) * graph->vexNum);	// ç”¨æ¥æ ‡è®°æ˜¯å¦å·²å¤„ç†
 	if (!visited) {
 		puts("visited malloc failed\n");
 		return;
@@ -171,45 +185,45 @@ void topological_sort(Graph* graph) {
 		visited[i] = 0;
 	}
 
-	int count = 0;  // ¼ÇÂ¼ÒÑÅÅĞòµÄ¶¥µãÊı
+	int count = 0;  // è®°å½•å·²æ’åºçš„é¡¶ç‚¹æ•°
 
 	while (count < graph->vexNum) {
-		int found = 0;  // ±ê¼ÇÊÇ·ñÕÒµ½Èë¶ÈÎª0µÄ¶¥µã
+		int found = 0;  // æ ‡è®°æ˜¯å¦æ‰¾åˆ°å…¥åº¦ä¸º0çš„é¡¶ç‚¹
 		for (int i = 0; i < graph->vexNum; i++) {
-			if (!visited[i] && check_colume(graph, i)) {  // Èç¹û¸Ã¶¥µãÎ´´¦ÀíÇÒÈë¶ÈÎª0
-				printf("%c\t", graph->vexs[i]);  // Êä³ö¶¥µã
-				visited[i] = 1;  // ±ê¼ÇÎªÒÑ´¦Àí
+			if (!visited[i] && check_colume(graph, i)) {  // å¦‚æœè¯¥é¡¶ç‚¹æœªå¤„ç†ä¸”å…¥åº¦ä¸º0
+				printf("%c\t", graph->vexs[i]);  // è¾“å‡ºé¡¶ç‚¹
+				visited[i] = 1;  // æ ‡è®°ä¸ºå·²å¤„ç†
 				count++;
 
-				// É¾³ı¸Ã¶¥µãµÄĞĞºÍÁĞ£¨½«ÖµÖÃÎª0£©
+				// åˆ é™¤è¯¥é¡¶ç‚¹çš„è¡Œå’Œåˆ—ï¼ˆå°†å€¼ç½®ä¸º0ï¼‰
 				for (int j = 0; j < graph->vexNum; j++) {
-					graph->arcs[j][i] = 1;  // É¾³ıÁĞ
-					graph->arcs[i][j] = 1;  // É¾³ıĞĞ
+					graph->arcs[j][i] = 1;  // åˆ é™¤åˆ—
+					graph->arcs[i][j] = 1;  // åˆ é™¤è¡Œ
 				}
 				found = 1;
-				break;  // ÕÒµ½Ò»¸ö¾ÍÍË³öµ±Ç°Ñ­»·
+				break;  // æ‰¾åˆ°ä¸€ä¸ªå°±é€€å‡ºå½“å‰å¾ªç¯
 			}
 		}
-		if (!found) {  // Èç¹ûÃ»ÓĞÕÒµ½Èë¶ÈÎª0µÄ¶¥µã
-			printf("Í¼ÖĞ´æÔÚ»·£¬ÎŞ·¨¼ÌĞø½øĞĞÍØÆËÅÅĞò¡£\n");
+		if (!found) {  // å¦‚æœæ²¡æœ‰æ‰¾åˆ°å…¥åº¦ä¸º0çš„é¡¶ç‚¹
+			printf("å›¾ä¸­å­˜åœ¨ç¯ï¼Œæ— æ³•ç»§ç»­è¿›è¡Œæ‹“æ‰‘æ’åºã€‚\n");
 			return;
 		}
 	}
 	printf("\n");
 }
 
-// ¼ì²éÄ³Ò»ÁĞÊÇ·ñÈ«Îª0£¨Èë¶ÈÎª0£©
+// æ£€æŸ¥æŸä¸€åˆ—æ˜¯å¦å…¨ä¸º0ï¼ˆå…¥åº¦ä¸º0ï¼‰
 int check_colume(Graph* graph, int index) {
 	for (int i = 0; i < graph->vexNum; i++) {
-		if (graph->arcs[i][index] > 1) {  // ¼ÙÉè¾ØÕóÖĞÖµÎª2±íÊ¾ÓĞ±ß
-			return 0;  // Èç¹û¸ÃÁĞÓĞ·ÇÁãÖµ£¬·µ»Ø0
+		if (graph->arcs[i][index] > 1) {  // å‡è®¾çŸ©é˜µä¸­å€¼ä¸º2è¡¨ç¤ºæœ‰è¾¹
+			return 0;  // å¦‚æœè¯¥åˆ—æœ‰éé›¶å€¼ï¼Œè¿”å›0
 		}
 	}
-	return 1;  // Èç¹û¸ÃÁĞÈ«Îª0£¬·µ»Ø1
+	return 1;  // å¦‚æœè¯¥åˆ—å…¨ä¸º0ï¼Œè¿”å›1
 }
 
 Graph* init_graph(int vexNum) {
-	//³õÊ¼»¯Í¼½á¹¹Ìå
+	//åˆå§‹åŒ–å›¾ç»“æ„ä½“
 	Graph* graph = (Graph*)malloc(sizeof(Graph));
 	if (!graph) {
 		puts("init_graph graph malloc failed\n");
@@ -228,7 +242,7 @@ Graph* init_graph(int vexNum) {
 		exit(EXIT_FAILURE);
 	}
 
-	//³õÊ¼»¯¶¥µãÊı×évexsºÍÁÚ½Ó¾ØÕóarcs
+	//åˆå§‹åŒ–é¡¶ç‚¹æ•°ç»„vexså’Œé‚»æ¥çŸ©é˜µarcs
 	for (int i = 0; i < vexNum; i++) {
 		graph->arcs[i] = (int*)malloc(sizeof(int) * vexNum);
 		if (!graph->arcs[i]) {
@@ -244,10 +258,10 @@ Graph* init_graph(int vexNum) {
 }
 
 void create_graph(Graph* graph, char* vexs, int* arcs) {
-	for (int i = 0; i < graph->vexNum; i++) {	//µ¼Èë¶şÎ¬ÁÚ½Ó¾ØÕó
+	for (int i = 0; i < graph->vexNum; i++) {	//å¯¼å…¥äºŒç»´é‚»æ¥çŸ©é˜µ
 		graph->vexs[i] = vexs[i];
 		for (int j = 0; j < graph->vexNum; j++) {
-			graph->arcs[i][j] = *(arcs + i * graph->vexNum + j);	//½«Ò»Î¬Êı×éarcs×ª»»Îªgraph->arcs¶şÎ¬Êı×é
+			graph->arcs[i][j] = *(arcs + i * graph->vexNum + j);	//å°†ä¸€ç»´æ•°ç»„arcsè½¬æ¢ä¸ºgraph->arcsäºŒç»´æ•°ç»„
 			if (graph->arcs[i][j] && graph->arcs[i][j] != MAX - 1) graph->arcNum++;
 		}
 	}
